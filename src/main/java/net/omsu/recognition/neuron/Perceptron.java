@@ -18,9 +18,10 @@ public class Perceptron {
         for (int i = 0; i < n; i++) {
             weights.add(1d);
         }
+        randomiseWeights();
     }
 
-    private void randomiseWeigths() {
+    private void randomiseWeights() {
         final Random random = new Random();
         weights.forEach(value -> value = random.nextDouble());
     }
