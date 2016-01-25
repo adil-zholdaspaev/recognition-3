@@ -7,22 +7,22 @@ import java.util.Random;
 /**
  *
  */
-public class Perseptron {
+public class Perceptron {
 
-    private List<Double> weigths;
+    private List<Double> weights;
     private double result;
     private double delta;
 
-    public Perseptron(final int n) {
-        this.weigths = new ArrayList<Double>(n);
+    public Perceptron(final int n) {
+        this.weights = new ArrayList<Double>(n);
         for (int i = 0; i < n; i++) {
-            weigths.add(1d);
+            weights.add(1d);
         }
     }
 
     private void randomiseWeigths() {
         final Random random = new Random();
-        weigths.forEach(value -> value = random.nextDouble());
+        weights.forEach(value -> value = random.nextDouble());
     }
 
     public double getDelta() {
@@ -33,12 +33,12 @@ public class Perseptron {
         this.delta = delta;
     }
 
-    public List<Double> getWeigths() {
-        return weigths;
+    public List<Double> getWeights() {
+        return weights;
     }
 
-    public void setWeigths(List<Double> weigths) {
-        this.weigths = weigths;
+    public void setWeights(List<Double> weights) {
+        this.weights = weights;
     }
 
     public double getResult() {
