@@ -15,15 +15,10 @@ public class Perceptron {
 
     public Perceptron(final int n) {
         this.weights = new ArrayList<>(n);
+        Random random = new Random();
         for (int i = 0; i < n; i++) {
-            weights.add(1d);
+            weights.add(random.nextDouble() * 0.3 + 0.1);
         }
-        randomiseWeights();
-    }
-
-    private void randomiseWeights() {
-        final Random random = new Random();
-        weights.forEach(value -> value = random.nextDouble());
     }
 
     public double getDelta() {

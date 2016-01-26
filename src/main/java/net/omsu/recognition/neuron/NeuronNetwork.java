@@ -18,16 +18,14 @@ public class NeuronNetwork {
 
     private final Function activationFunction;
     private final Function learningFunction;
-    private final ArgumentRange argumentRange;
 
     private final List<Layer> network;
 
-    public NeuronNetwork(Function activationFunction, Function learningFunction, ArgumentRange argumentRange) {
+    public NeuronNetwork(Function activationFunction, Function learningFunction) {
         this.activationFunction = activationFunction;
         this.learningFunction = learningFunction;
-        this.argumentRange = argumentRange;
 
-        Integer[] networkLayers = {1, 3, 1};
+        Integer[] networkLayers = {1, 2, 1};
 
         this.network = initNetwork(networkLayers);
     }

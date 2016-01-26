@@ -12,7 +12,7 @@ public class Tanh implements Function {
     }
 
     public double calculate(double argument) {
-        return Math.tanh(argument);
+        return Math.tanh(-factor * argument);
     }
 
     public double derivative(double argument) {
