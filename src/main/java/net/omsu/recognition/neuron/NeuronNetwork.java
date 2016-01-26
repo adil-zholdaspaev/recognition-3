@@ -14,6 +14,8 @@ import java.util.stream.IntStream;
  */
 public class NeuronNetwork {
 
+    private static final double SCALE = 0.0001;
+
     private final Function activationFunction;
     private final Function learningFunction;
     private final ArgumentRange argumentRange;
@@ -34,7 +36,7 @@ public class NeuronNetwork {
         trainingData.forEach(data -> {
             Double result = calculateFunction(data.getKey());
             calculateDelta(data.getValue() - result);
-            calculateWeight();
+            calculateWeight(data.getKey());
         });
     }
 
@@ -114,7 +116,34 @@ public class NeuronNetwork {
         }
     }
 
-    private void calculateWeight() {
+    private void calculateWeight(final Double argument) {
+        Perceptron perceptron2 = new Perceptron(1);
+        perceptron2.setResult(argument);
 
+        Layer tempLayer = new Layer(Collections.singletonList(perceptron2));
+        final List<Layer> previousLayer = new ArrayList<>();
+        previousLayer.add(tempLayer);
+
+        network.forEach(layer -> {
+            Layer prevLayer = previousLayer.get(0);
+            List<Perceptron> perceptrons = prevLayer.getPerceptrons();
+
+
+            for (Perceptron perceptron : layer.getPerceptrons()) {
+
+                List<Double> newWeight = new ArrayList<>();
+                int index = 0;
+                for (Double w : perceptron.getWeights()) {
+
+                    double weight = w + SCALE * perceptrons.get(index).getDelta() * activationFunction.derivative(perceptrons.get(index).getResult());
+                    index++;
+                    newWeight.add(weight);
+                }
+                perceptron.setWeights(newWeight);
+            }
+
+            previousLayer.clear();
+            previousLayer.add(layer);
+        });
     }
 }
