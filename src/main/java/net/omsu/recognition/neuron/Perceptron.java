@@ -14,7 +14,7 @@ public class Perceptron {
     private double delta;
 
     public Perceptron(final int n) {
-        this.weights = new ArrayList<Double>(n);
+        this.weights = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             weights.add(1d);
         }

@@ -7,13 +7,13 @@ import java.util.List;
  */
 public class Layer {
 
-    private final List<Perceptron> neurons;
+    private final List<Perceptron> perceptrons;
 
-    public Layer(final List<Perceptron> neurons) {
-        this.neurons = neurons;
+    public Layer(final List<Perceptron> perceptrons) {
+        this.perceptrons = perceptrons;
     }
 
-    public List<Perceptron> getNeurons() {
-        return neurons;
+    public List<Perceptron> getPerceptrons() {
+        return perceptrons;
     }
 }
