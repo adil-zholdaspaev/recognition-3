@@ -8,11 +8,13 @@ public class NeuronFunction implements Function {
     public NeuronFunction() {
     }
 
-    public double calculate(final double argument) {
+    @Override
+    public double calculate(double argument) {
         return Math.sin(argument);
     }
 
-    public double derivative(final double argument) {
+    @Override
+    public double derivative(double argument) {
         return Math.cos(argument);
     }
 }

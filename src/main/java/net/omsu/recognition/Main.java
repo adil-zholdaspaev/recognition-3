@@ -1,5 +1,9 @@
 package net.omsu.recognition;
 
+import com.xeiam.xchart.Chart;
+import com.xeiam.xchart.ChartBuilder;
+import com.xeiam.xchart.SwingWrapper;
+import net.omsu.recognition.function.Function;
 import net.omsu.recognition.function.NeuronFunction;
 import net.omsu.recognition.function.Tanh;
 import net.omsu.recognition.neuron.NeuronNetwork;
@@ -13,22 +17,57 @@ import java.util.List;
  */
 public class Main {
 
+    private static final Double RANGE = 10d;
+    private static final Double DELTA = 0.05;
+
     public static void main(String[] args) {
+        Chart chart = new ChartBuilder().xAxisTitle("X").yAxisTitle("Y").width(600).height(400).build();
+        chart.getStyleManager().setMarkerSize(6);
 
         NeuronFunction function = new NeuronFunction();
-        NeuronNetwork network = new NeuronNetwork(new Tanh(0.8), function);
+        NeuronNetwork network = new NeuronNetwork(new Tanh(1), function);
 
         List<Pair<Double, Double>> learningData = new ArrayList<>();
-        for (double i = -10; i < 10; i += 0.05) {
+        for (double i = -RANGE; i < -RANGE + 0.1; i +=DELTA) {
             Pair<Double, Double> value = new Pair<>(i, function.calculate(i));
             learningData.add(value);
         }
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 2; i++) {
             network.learn(learningData);
         }
 
-        System.out.println(network.verify(1d));
-        System.out.println(Math.sin(1d));
+        System.out.println(network.verify(-10d));
+        System.out.println(Math.sin(-10d));
+
+        drawFunction(function, chart);
+        drawNeuronFunction(network, chart);
+
+        List<Chart> charts = new ArrayList<>();
+        charts.add(chart);
+
+        new SwingWrapper(charts).displayChartMatrix();
+    }
+
+    private static void drawFunction(Function function, final Chart chart) {
+        List<Double> arguments = new ArrayList<>();
+        List<Double> results = new ArrayList<>();
+
+        for (double i = -RANGE; i <= RANGE; i += DELTA) {
+            arguments.add(i);
+            results.add(function.calculate(i));
+        }
+        chart.addSeries("sin(x)", arguments, results);
+    }
+
+    private static void drawNeuronFunction(final NeuronNetwork network, final Chart chart) {
+        List<Double> arguments = new ArrayList<>();
+        List<Double> results = new ArrayList<>();
+
+        for (double i = -RANGE; i <= RANGE; i += DELTA) {
+            arguments.add(i);
+            results.add(network.verify(i));
+        }
+        chart.addSeries("y", arguments, results);
     }
 }

@@ -1,7 +1,6 @@
 package net.omsu.recognition.neuron;
 
 import net.omsu.recognition.function.Function;
-import net.omsu.recognition.neuron.range.ArgumentRange;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.ArrayList;
@@ -14,16 +13,17 @@ import java.util.stream.IntStream;
  */
 public class NeuronNetwork {
 
-    private static final double SCALE = 0.0001;
+    private static final double EPSILON = 0.001;
 
     private final Function activationFunction;
-    private final Function learningFunction;
-
+    private final Function function;
     private final List<Layer> network;
 
-    public NeuronNetwork(Function activationFunction, Function learningFunction) {
+    public NeuronNetwork(Function activationFunction,
+                         Function function) {
+
         this.activationFunction = activationFunction;
-        this.learningFunction = learningFunction;
+        this.function = function;
 
         Integer[] networkLayers = {1, 2, 1};
 
@@ -31,10 +31,44 @@ public class NeuronNetwork {
     }
 
     public void learn(final List<Pair<Double, Double>> trainingData) {
+
+        /*Pair<Double, Double> value = trainingData.get(0);
+        Double argument = value.getKey();
+        Double actualResult = value.getValue();
+
+        Double error = 0d;
+        do {
+            Double result = calculateFunction(argument);
+            error = Math.abs(actualResult - result);
+
+            calculateDelta(error);
+            calculateWeight(argument);
+
+            argument = argument - EPSILON * function.derivative(argument);
+            actualResult = function.calculate(argument);
+        } while (error > EPSILON);*/
+
         trainingData.forEach(data -> {
-            Double result = calculateFunction(data.getKey());
-            calculateDelta(data.getValue() - result);
-            calculateWeight(data.getKey());
+            Double argument = data.getKey();
+            Double actualResult = data.getValue();
+
+            Double error = 0d;
+            do {
+                Double result = calculateFunction(argument);
+                error = Math.abs(actualResult - result);
+                if (error < EPSILON) {
+                    break;
+                }
+
+                calculateDelta(error);
+                calculateWeight(argument);
+                if (actualResult - result > 0) {
+                    argument = argument - EPSILON * function.derivative(argument);
+                } else {
+                    argument = argument + EPSILON * function.derivative(argument);
+                }
+                actualResult = function.calculate(argument);
+            } while (error > EPSILON);
         });
     }
 
@@ -133,7 +167,7 @@ public class NeuronNetwork {
                 int index = 0;
                 for (Double w : perceptron.getWeights()) {
 
-                    double weight = w + SCALE * perceptrons.get(index).getDelta() * activationFunction.derivative(perceptrons.get(index).getResult());
+                    double weight = w + 0.1 * perceptrons.get(index).getDelta() * activationFunction.derivative(perceptrons.get(index).getResult());
                     index++;
                     newWeight.add(weight);
                 }
