@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 public class NeuronNetwork {
 
     private static final double EPSILON = 0.001;
-    private static final double LEARNING_SPEED = 0.5;
+    private static final double LEARNING_SPEED = 0.25;
 
     private final Function activationFunction;
     private final List<Layer> network;
@@ -22,14 +22,14 @@ public class NeuronNetwork {
     public NeuronNetwork(Function activationFunction) {
         this.activationFunction = activationFunction;
 
-        Integer[] networkLayers = {1, 2, 1};
+        Integer[] networkLayers = {1, 50, 1};
 
         this.network = initNetwork(networkLayers);
     }
 
     public void learn(final List<Pair<Double, Double>> trainingData) {
 
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 4000; i++) {
 
             trainingData.forEach(data -> {
                 Double argument = data.getKey();
@@ -39,6 +39,8 @@ public class NeuronNetwork {
 
                 Double result = calculateFunction(argument);
                 error = actualResult - result;
+
+                System.out.println(error);
 
                 calculateErrors(error);
                 updateWeights();

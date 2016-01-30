@@ -18,22 +18,22 @@ import java.util.List;
 public class Main {
 
     private static final Double RANGE = 10d;
-    private static final Double DELTA = 0.05;
+    private static final Double DELTA = 0.01;
 
     public static void main(String[] args) {
         Chart chart = new ChartBuilder().xAxisTitle("X").yAxisTitle("Y").width(600).height(400).build();
         chart.getStyleManager().setMarkerSize(6);
 
         NeuronFunction function = new NeuronFunction();
-        NeuronNetwork network = new NeuronNetwork(new Tanh(1));
+        NeuronNetwork network = new NeuronNetwork(new Tanh(0.5));
 
         List<Pair<Double, Double>> learningData = new ArrayList<>();
-        for (double i = -RANGE; i < -RANGE + 2; i += DELTA) {
+        for (double i = -RANGE; i < RANGE; i += DELTA) {
             Pair<Double, Double> value = new Pair<>(i, function.calculate(i));
             learningData.add(value);
         }
 
-        network.learn(learningData);
+        network.learn(learningData.subList(1, 25));
 
         System.out.println(network.verify(-10d));
         System.out.println(Math.sin(-10d));

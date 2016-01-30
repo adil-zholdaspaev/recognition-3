@@ -22,7 +22,7 @@ public class Perceptron {
         this.weights = new ArrayList<>(n);
         Random random = new Random();
         for (int i = 0; i < n; i++) {
-            weights.add(random.nextDouble() - 0.5);
+            weights.add(getRandomValue(random));
         }
         initialOffset = getRandomValue(random);
         weightOffset = Collections.emptyList();
@@ -32,7 +32,7 @@ public class Perceptron {
     }
 
     private Double getRandomValue(final Random random) {
-        return random.nextDouble() - 0.5;
+        return 0.5 - random.nextGaussian();
     }
 
     public List<Double> getWeights() {
