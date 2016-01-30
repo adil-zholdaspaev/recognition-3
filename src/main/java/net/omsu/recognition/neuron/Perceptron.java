@@ -1,6 +1,7 @@
 package net.omsu.recognition.neuron;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -10,23 +11,28 @@ import java.util.Random;
 public class Perceptron {
 
     private List<Double> weights;
-    private double result;
-    private double delta;
+    private Double initialOffset;
+    private Double outputValue;
+    private Double initialWeightOffset;
+    private List<Double> weightOffset;
+    private Double arguments;
+    private Double delta;
 
     public Perceptron(final int n) {
         this.weights = new ArrayList<>(n);
         Random random = new Random();
         for (int i = 0; i < n; i++) {
-            weights.add(random.nextDouble() * 0.3 + 0.1);
+            weights.add(random.nextDouble() - 0.5);
         }
+        initialOffset = getRandomValue(random);
+        weightOffset = Collections.emptyList();
+        initialWeightOffset = 0d;
+        outputValue = 0d;
+        delta = 0d;
     }
 
-    public double getDelta() {
-        return delta;
-    }
-
-    public void setDelta(double delta) {
-        this.delta = delta;
+    private Double getRandomValue(final Random random) {
+        return random.nextDouble() - 0.5;
     }
 
     public List<Double> getWeights() {
@@ -37,11 +43,51 @@ public class Perceptron {
         this.weights = weights;
     }
 
-    public double getResult() {
-        return result;
+    public Double getInitialOffset() {
+        return initialOffset;
     }
 
-    public void setResult(double result) {
-        this.result = result;
+    public void setInitialOffset(Double initialOffset) {
+        this.initialOffset = initialOffset;
+    }
+
+    public Double getOutputValue() {
+        return outputValue;
+    }
+
+    public void setOutputValue(Double outputValue) {
+        this.outputValue = outputValue;
+    }
+
+    public List<Double> getWeightOffset() {
+        return weightOffset;
+    }
+
+    public void setWeightOffset(List<Double> weightOffset) {
+        this.weightOffset = weightOffset;
+    }
+
+    public Double getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(Double arguments) {
+        this.arguments = arguments;
+    }
+
+    public Double getInitialWeightOffset() {
+        return initialWeightOffset;
+    }
+
+    public void setInitialWeightOffset(Double initialWeightOffset) {
+        this.initialWeightOffset = initialWeightOffset;
+    }
+
+    public Double getDelta() {
+        return delta;
+    }
+
+    public void setDelta(Double delta) {
+        this.delta = delta;
     }
 }

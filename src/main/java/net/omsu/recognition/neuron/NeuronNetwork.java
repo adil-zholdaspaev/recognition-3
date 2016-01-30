@@ -14,16 +14,13 @@ import java.util.stream.IntStream;
 public class NeuronNetwork {
 
     private static final double EPSILON = 0.001;
+    private static final double LEARNING_SPEED = 0.5;
 
     private final Function activationFunction;
-    private final Function function;
     private final List<Layer> network;
 
-    public NeuronNetwork(Function activationFunction,
-                         Function function) {
-
+    public NeuronNetwork(Function activationFunction) {
         this.activationFunction = activationFunction;
-        this.function = function;
 
         Integer[] networkLayers = {1, 2, 1};
 
@@ -31,6 +28,22 @@ public class NeuronNetwork {
     }
 
     public void learn(final List<Pair<Double, Double>> trainingData) {
+
+        for (int i = 0; i < 10000; i++) {
+
+            trainingData.forEach(data -> {
+                Double argument = data.getKey();
+                Double actualResult = data.getValue();
+
+                Double error = 0d;
+
+                Double result = calculateFunction(argument);
+                error = actualResult - result;
+
+                calculateErrors(error);
+                updateWeights();
+            });
+        }
 
         /*Pair<Double, Double> value = trainingData.get(0);
         Double argument = value.getKey();
@@ -47,29 +60,6 @@ public class NeuronNetwork {
             argument = argument - EPSILON * function.derivative(argument);
             actualResult = function.calculate(argument);
         } while (error > EPSILON);*/
-
-        trainingData.forEach(data -> {
-            Double argument = data.getKey();
-            Double actualResult = data.getValue();
-
-            Double error = 0d;
-            do {
-                Double result = calculateFunction(argument);
-                error = Math.abs(actualResult - result);
-                if (error < EPSILON) {
-                    break;
-                }
-
-                calculateDelta(error);
-                calculateWeight(argument);
-                if (actualResult - result > 0) {
-                    argument = argument - EPSILON * function.derivative(argument);
-                } else {
-                    argument = argument + EPSILON * function.derivative(argument);
-                }
-                actualResult = function.calculate(argument);
-            } while (error > EPSILON);
-        });
     }
 
     public Double verify(final Double argument) {
@@ -98,84 +88,66 @@ public class NeuronNetwork {
     }
 
     private Double calculateFunction(final Double argument) {
-        Perceptron perceptron2 = new Perceptron(1);
-        perceptron2.setResult(argument);
+        network.get(0).getPerceptrons().forEach(perceptron -> perceptron.setOutputValue(argument));
 
-        Layer tempLayer = new Layer(Collections.singletonList(perceptron2));
-        final List<Layer> previousLayer = new ArrayList<>();
-        previousLayer.add(tempLayer);
-
-        network.forEach(layer -> {
-            Layer prevLayer = previousLayer.get(0);
-            List<Perceptron> perceptrons = prevLayer.getPerceptrons();
-
-            layer.getPerceptrons().forEach(perceptron -> {
-
-                int size = perceptron.getWeights().size();
-                Double arg = 0d;
-                for (int i = 0; i < size; i++) {
-                    arg += perceptron.getWeights().get(i) * perceptrons.get(i).getResult();
-                }
-
-                perceptron.setResult(activationFunction.calculate(arg));
-
-            });
-
-            previousLayer.clear();
-            previousLayer.add(layer);
+        network.get(1).getPerceptrons().forEach(perceptron -> {
+            Double sum = perceptron.getInitialOffset() + argument * perceptron.getWeights().get(0);
+            perceptron.setArguments(sum);
+            perceptron.setOutputValue(activationFunction.calculate(sum));
         });
 
-        return network.get(network.size() - 1).getPerceptrons().get(0).getResult();
+        network.get(2).getPerceptrons().forEach(perceptron -> {
+            Double argumentsSum = 0d;
+            for (int i = 0; i < perceptron.getWeights().size(); i++) {
+                argumentsSum += network.get(1).getPerceptrons().get(i).getOutputValue() * perceptron.getWeights().get(i);
+            }
+            argumentsSum += perceptron.getInitialOffset();
+
+            perceptron.setArguments(argumentsSum);
+            perceptron.setOutputValue(activationFunction.calculate(argumentsSum));
+        });
+
+        return network.get(2).getPerceptrons().get(0).getOutputValue();
     }
 
-    private void calculateDelta(final Double error) {
-        network.get(network.size() - 1).getPerceptrons().forEach(p -> p.setDelta(error));
+    private void calculateErrors(final Double error) {
+        network.get(2).getPerceptrons().forEach(perceptron -> {
+            final Double delta = error * activationFunction.derivative(perceptron.getArguments());
+            perceptron.setInitialWeightOffset(delta * LEARNING_SPEED);
+            perceptron.setDelta(delta);
 
-        for (int i = network.size() - 2; i >= 0; i--) {
+            final List<Double> weightOffset = new ArrayList<>();
+            network.get(1).getPerceptrons().forEach(p -> weightOffset.add(delta * p.getOutputValue()));
 
-            List<Perceptron> perceptrons = network.get(i).getPerceptrons();
-            int index = 0;
-            for(Perceptron perceptron : perceptrons) {
+            perceptron.setWeightOffset(weightOffset);
+        });
 
-                double delta = 0d;
-                for (Perceptron neuron : network.get(i + 1).getPerceptrons()) {
-                    delta += (neuron.getDelta() * neuron.getWeights().get(index));
-                }
+        for (int i = 0; i < network.get(1).getPerceptrons().size(); i++) {
+            Perceptron perceptron = network.get(1).getPerceptrons().get(i);
 
-                perceptron.setDelta(delta);
-                index++;
-            }
+            Perceptron p = network.get(2).getPerceptrons().get(0);
+            Double prevDelta = p.getDelta() * p.getWeights().get(i);
+            final Double delta = prevDelta * activationFunction.derivative(perceptron.getArguments());
+
+            perceptron.setInitialWeightOffset(delta * LEARNING_SPEED);
+            perceptron.setDelta(delta);
+
+
+            final List<Double> weightOffset = new ArrayList<>();
+            network.get(0).getPerceptrons().forEach(per -> weightOffset.add(delta * per.getOutputValue()));
+
+            perceptron.setWeightOffset(weightOffset);
         }
     }
 
-    private void calculateWeight(final Double argument) {
-        Perceptron perceptron2 = new Perceptron(1);
-        perceptron2.setResult(argument);
-
-        Layer tempLayer = new Layer(Collections.singletonList(perceptron2));
-        final List<Layer> previousLayer = new ArrayList<>();
-        previousLayer.add(tempLayer);
-
-        network.forEach(layer -> {
-            Layer prevLayer = previousLayer.get(0);
-            List<Perceptron> perceptrons = prevLayer.getPerceptrons();
-
-
-            for (Perceptron perceptron : layer.getPerceptrons()) {
-
-                List<Double> newWeight = new ArrayList<>();
-                int index = 0;
-                for (Double w : perceptron.getWeights()) {
-
-                    double weight = w + 0.1 * perceptrons.get(index).getDelta() * activationFunction.derivative(perceptrons.get(index).getResult());
-                    index++;
-                    newWeight.add(weight);
-                }
-                perceptron.setWeights(newWeight);
+    private void updateWeights() {
+        network.get(1).getPerceptrons().forEach(perceptron -> {
+            List<Double> weights = new ArrayList<>();
+            for (int i = 0; i < perceptron.getWeights().size(); i++) {
+                weights.add(perceptron.getWeights().get(i) + perceptron.getWeightOffset().get(i));
             }
-
-            previousLayer.clear();
-            previousLayer.add(layer);
+            perceptron.setWeights(weights);
+            perceptron.setInitialOffset((perceptron.getInitialOffset() + perceptron.getInitialWeightOffset()));
         });
     }
 }

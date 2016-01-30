@@ -25,17 +25,15 @@ public class Main {
         chart.getStyleManager().setMarkerSize(6);
 
         NeuronFunction function = new NeuronFunction();
-        NeuronNetwork network = new NeuronNetwork(new Tanh(1), function);
+        NeuronNetwork network = new NeuronNetwork(new Tanh(1));
 
         List<Pair<Double, Double>> learningData = new ArrayList<>();
-        for (double i = -RANGE; i < -RANGE + 0.1; i +=DELTA) {
+        for (double i = -RANGE; i < -RANGE + 2; i += DELTA) {
             Pair<Double, Double> value = new Pair<>(i, function.calculate(i));
             learningData.add(value);
         }
 
-        for (int i = 0; i < 2; i++) {
-            network.learn(learningData);
-        }
+        network.learn(learningData);
 
         System.out.println(network.verify(-10d));
         System.out.println(Math.sin(-10d));

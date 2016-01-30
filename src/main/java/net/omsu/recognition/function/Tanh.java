@@ -12,10 +12,10 @@ public class Tanh implements Function {
     }
 
     public double calculate(double argument) {
-        return Math.tanh(-factor * argument);
+        return (2 / (1 + Math.exp(-factor * argument))) - 1;
     }
 
     public double derivative(double argument) {
-        return 1 / Math.pow(Math.cosh(argument), 2);
+        return 0.5 * (1 + calculate(factor * argument)) * (1 - calculate(factor * argument));
     }
 }
