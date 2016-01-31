@@ -10,7 +10,7 @@ public class NeuronFunction implements Function {
 
     @Override
     public double calculate(double argument) {
-        return Math.sin(argument);
+        return argument * Math.sin(argument) / 10;
     }
 
     @Override

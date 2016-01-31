@@ -32,7 +32,7 @@ public class Perceptron {
     }
 
     private Double getRandomValue(final Random random) {
-        return 0.5 - random.nextGaussian();
+        return random.nextGaussian() * 2 - 1;
     }
 
     public List<Double> getWeights() {
