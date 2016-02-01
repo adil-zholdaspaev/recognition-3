@@ -29,7 +29,7 @@ public class NeuronNetwork {
 
         final List<Double> errors = new ArrayList<>();
 
-        for (int i = 0; i < 70000; i++) {
+        for (int i = 0; i < 15000; i++) {
 
             trainingData.forEach(data -> {
                 Double argument = data.getKey();
@@ -138,11 +138,11 @@ public class NeuronNetwork {
     }
 
     private void updateWeights() {
-        for (int j = 1; j < network.size() - 1; j++) {
+        for (int j = 1; j < network.size(); j++) {
             network.get(j).getPerceptrons().forEach(perceptron -> {
                 List<Double> weights = new ArrayList<>();
                 for (int i = 0; i < perceptron.getWeights().size(); i++) {
-                    weights.add(perceptron.getWeights().get(i) + perceptron.getWeightOffset().get(i));
+                    weights.add(0.999995 * (perceptron.getWeights().get(i) + perceptron.getWeightOffset().get(i)));
                 }
                 perceptron.setWeights(weights);
                 perceptron.setInitialOffset((perceptron.getInitialOffset() + perceptron.getInitialWeightOffset()));

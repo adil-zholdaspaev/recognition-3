@@ -7,6 +7,7 @@ import net.omsu.recognition.function.Function;
 import net.omsu.recognition.function.NeuronFunction;
 import net.omsu.recognition.function.Tanh;
 import net.omsu.recognition.neuron.NeuronNetwork;
+import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.ArrayList;
@@ -28,8 +29,9 @@ public class Main {
         NeuronNetwork network = new NeuronNetwork(new Tanh(0.1));
 
         List<Pair<Double, Double>> learningData = new ArrayList<>();
-        for (double i = 0; i < RANGE; i += DELTA) {
-            Pair<Double, Double> value = new Pair<>(i, function.calculate(i));
+        UniformRealDistribution distribution = new UniformRealDistribution(-0.15, 0.15);
+        for (double i = 0; i < RANGE; i += DELTA + 0.2) {
+            Pair<Double, Double> value = new Pair<>(i, function.calculate(i) + distribution.sample());
             learningData.add(value);
         }
 
